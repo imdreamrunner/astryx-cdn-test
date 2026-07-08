@@ -82,59 +82,44 @@
   </div>
 
   <script type="module">
-    // ─── Boot sequence ─────────────────────────────────────────────
-    // 1. Import React 19 from esm.sh (React 19 has no UMD builds)
-    // 2. Import the Astryx ESM build from esm.sh (?external=react,react-dom)
-    // 3. Import pre-built themes from esm.sh
-    // 4. Render the app
+    // ─── Static ESM imports (resolved via the import map + esm.sh) ──
+    import React from 'react';
+    import { createRoot } from 'react-dom/client';
+    import htm from 'htm';
+
+    // Astryx ESM build. ?external=react,react-dom makes esm.sh emit bare
+    // `react` imports that resolve through the import map → one shared
+    // React instance. The StyleX runtime rides along inside the esm.sh build.
+    import {
+      Theme, defineTheme,
+      AppShell, TopNav, TopNavHeading, TopNavItem,
+      SideNav, SideNavSection, SideNavItem,
+      Button, IconButton, ButtonGroup,
+      Text, Heading, Link,
+      VStack, HStack, Stack,
+      Card, Section, Divider, Badge, Banner,
+      Switch, TextInput, TextArea, Selector,
+      SegmentedControl, SegmentedControlItem,
+      Grid, EmptyState, ProgressBar, StatusDot,
+      Spinner, Kbd, Tooltip, Avatar,
+      MediaTheme,
+    } from 'https://esm.sh/@astryxdesign/core@0.1.2?external=react,react-dom';
+
+    // Pre-built themes from esm.sh
+    import { neutralTheme } from 'https://esm.sh/@astryxdesign/theme-neutral@0.1.2/built';
+    import { stoneTheme } from 'https://esm.sh/@astryxdesign/theme-stone@0.1.2/built';
+    import { matchaTheme } from 'https://esm.sh/@astryxdesign/theme-matcha@0.1.2/built';
+    import { butterTheme } from 'https://esm.sh/@astryxdesign/theme-butter@0.1.2/built';
 
     const root = document.getElementById('root');
 
+    // htm gives us JSX-like syntax without a bundler
+    const h = htm.bind(React.createElement);
+    const { useState, useEffect, useMemo } = React;
+    const themes = { neutral: neutralTheme, stone: stoneTheme, matcha: matchaTheme, butter: butterTheme };
+
     try {
-      // Step 1: React 19 from esm.sh
-      const React = (await import('react')).default;
-      const { createRoot } = await import('react-dom/client');
-      const htm = (await import('htm')).default;
-
-      // htm gives us JSX-like syntax without a bundler
-      const h = htm.bind(React.createElement);
-
-      // Step 2: Astryx from esm.sh as an ESM module.
-      // ?external=react,react-dom makes esm.sh emit bare `react` imports
-      // that resolve through our import map → one shared React instance.
-      // StyleX runtime stays bundled inside the esm.sh build.
-      const A = await import('https://esm.sh/@astryxdesign/core@0.1.2?external=react,react-dom');
-      const {
-        Theme, defineTheme,
-        AppShell, TopNav, TopNavHeading, TopNavItem,
-        SideNav, SideNavSection, SideNavItem,
-        Button, IconButton, ButtonGroup,
-        Text, Heading, Link,
-        VStack, HStack, Stack,
-        Card, Section, Divider, Badge, Banner,
-        Switch, TextInput, TextArea, Selector,
-        SegmentedControl, SegmentedControlItem,
-        Grid, EmptyState, ProgressBar, StatusDot,
-        Spinner, Kbd, Tooltip, Avatar,
-        MediaTheme,
-      } = A;
-
-      // Step 4: Import all pre-built themes from esm.sh (static imports for dev + prod)
-      const { neutralTheme } = await import('https://esm.sh/@astryxdesign/theme-neutral@0.1.2/built');
-      const { stoneTheme } = await import('https://esm.sh/@astryxdesign/theme-stone@0.1.2/built');
-      const { matchaTheme } = await import('https://esm.sh/@astryxdesign/theme-matcha@0.1.2/built');
-      const { butterTheme } = await import('https://esm.sh/@astryxdesign/theme-butter@0.1.2/built');
-
-      const themes = {
-        neutral: neutralTheme,
-        stone: stoneTheme,
-        matcha: matchaTheme,
-        butter: butterTheme,
-      };
-
       // ─── App ────────────────────────────────────────────────────
-
-      const { useState, useEffect, useMemo } = React;
 
       function App() {
         const [mode, setMode] = useState('light');
