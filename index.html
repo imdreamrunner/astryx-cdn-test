@@ -11,17 +11,18 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Montserrat:wght@400;500;600;700&family=DM+Sans:wght@400;500;600;700&family=Playwrite+US+Trad:wght@400;500;600&family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet">
 
-  <!-- Astryx CSS from CDN: reset + pre-compiled StyleX + all theme CSS files -->
-  <link rel="stylesheet" href="https://unpkg.com/@astryxdesign/core@0.1.2/src/reset.css">
-  <link rel="stylesheet" href="https://unpkg.com/@astryxdesign/core@0.1.2/dist/astryx.css">
-  <link rel="stylesheet" href="https://unpkg.com/@astryxdesign/theme-neutral@0.1.2/dist/theme.css">
-  <link rel="stylesheet" href="https://unpkg.com/@astryxdesign/theme-stone@0.1.2/dist/theme.css">
-  <link rel="stylesheet" href="https://unpkg.com/@astryxdesign/theme-matcha@0.1.2/dist/theme.css">
-  <link rel="stylesheet" href="https://unpkg.com/@astryxdesign/theme-butter@0.1.2/dist/theme.css">
+  <!-- Astryx CSS from esm.sh: reset + pre-compiled StyleX + all theme CSS files -->
+  <link rel="stylesheet" href="https://esm.sh/@astryxdesign/core@0.1.2/src/reset.css">
+  <link rel="stylesheet" href="https://esm.sh/@astryxdesign/core@0.1.2/dist/astryx.css">
+  <link rel="stylesheet" href="https://esm.sh/@astryxdesign/theme-neutral@0.1.2/dist/theme.css">
+  <link rel="stylesheet" href="https://esm.sh/@astryxdesign/theme-stone@0.1.2/dist/theme.css">
+  <link rel="stylesheet" href="https://esm.sh/@astryxdesign/theme-matcha@0.1.2/dist/theme.css">
+  <link rel="stylesheet" href="https://esm.sh/@astryxdesign/theme-butter@0.1.2/dist/theme.css">
 
-  <!-- Import map: React 19 from esm.sh. Astryx's ESM build emits bare
-       `react` / `react/jsx-runtime` imports (via ?external=react,react-dom),
-       so these entries guarantee a single shared React instance. -->
+  <!-- Import map: single source of truth for every bare specifier, all on
+       esm.sh. The react entries are required so Astryx's internal bare
+       `react` imports (from ?external=react,react-dom) resolve to one shared
+       React instance; the rest let app code import by bare name too. -->
   <script type="importmap">
   {
     "imports": {
@@ -29,7 +30,12 @@
       "react/jsx-runtime": "https://esm.sh/react@19.2.7/jsx-runtime",
       "react-dom": "https://esm.sh/react-dom@19.2.7",
       "react-dom/client": "https://esm.sh/react-dom@19.2.7/client",
-      "htm": "https://esm.sh/htm@3.1.1"
+      "htm": "https://esm.sh/htm@3.1.1",
+      "@astryxdesign/core": "https://esm.sh/@astryxdesign/core@0.1.2?external=react,react-dom",
+      "@astryxdesign/theme-neutral": "https://esm.sh/@astryxdesign/theme-neutral@0.1.2/built",
+      "@astryxdesign/theme-stone": "https://esm.sh/@astryxdesign/theme-stone@0.1.2/built",
+      "@astryxdesign/theme-matcha": "https://esm.sh/@astryxdesign/theme-matcha@0.1.2/built",
+      "@astryxdesign/theme-butter": "https://esm.sh/@astryxdesign/theme-butter@0.1.2/built"
     }
   }
   </script>
@@ -87,9 +93,10 @@
     import { createRoot } from 'react-dom/client';
     import htm from 'htm';
 
-    // Astryx ESM build. ?external=react,react-dom makes esm.sh emit bare
-    // `react` imports that resolve through the import map → one shared
-    // React instance. The StyleX runtime rides along inside the esm.sh build.
+    // Astryx core + pre-built themes, all by bare specifier (see import map).
+    // The ?external=react,react-dom in the map makes esm.sh emit bare `react`
+    // imports that share our single React instance; the StyleX runtime rides
+    // along inside the esm.sh build.
     import {
       Theme, defineTheme,
       AppShell, TopNav, TopNavHeading, TopNavItem,
@@ -103,13 +110,12 @@
       Grid, EmptyState, ProgressBar, StatusDot,
       Spinner, Kbd, Tooltip, Avatar,
       MediaTheme,
-    } from 'https://esm.sh/@astryxdesign/core@0.1.2?external=react,react-dom';
+    } from '@astryxdesign/core';
 
-    // Pre-built themes from esm.sh
-    import { neutralTheme } from 'https://esm.sh/@astryxdesign/theme-neutral@0.1.2/built';
-    import { stoneTheme } from 'https://esm.sh/@astryxdesign/theme-stone@0.1.2/built';
-    import { matchaTheme } from 'https://esm.sh/@astryxdesign/theme-matcha@0.1.2/built';
-    import { butterTheme } from 'https://esm.sh/@astryxdesign/theme-butter@0.1.2/built';
+    import { neutralTheme } from '@astryxdesign/theme-neutral';
+    import { stoneTheme } from '@astryxdesign/theme-stone';
+    import { matchaTheme } from '@astryxdesign/theme-matcha';
+    import { butterTheme } from '@astryxdesign/theme-butter';
 
     const root = document.getElementById('root');
 
